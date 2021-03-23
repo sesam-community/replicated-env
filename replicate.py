@@ -27,12 +27,17 @@ def rewrite_pipe(p):
     }
 
 
-def has_external_transform(c):
+def has_external_source(p):
+    # TODO look at conditional sources
+    return p.get("source", {}).get("type") not in ["dataset", "merge", "union_datasets", "merge_datasets"]
+
+
+def has_external_transform(p):
     def is_external_transform(t):
         return t.get("type") in ["http", "rest"]
 
     # TODO look at conditional transforms
-    transforms = c.get("transform")
+    transforms = p.get("transform")
     if type(transforms) is list:
         for transform in transforms:
             if is_external_transform(transform):
@@ -44,10 +49,8 @@ def has_external_transform(c):
 
 
 def should_replicate(c):
-    # TODO look at conditional sources
-    external_source = c.get("source", {}).get("type") not in ["dataset", "merge", "union_datasets", "merge_datasets"]
     tagged = c.get("metadata", {}).get("$replicate", False)
-    return external_source or has_external_transform(c) or tagged
+    return has_external_source(c) or has_external_transform(c) or tagged
 
 
 def rewrite_config(c):

@@ -7,3 +7,5 @@ Add a admin JWT to the source and target instance. Run script with the required 
 For improved security create a custom role in the source instance, give the role "Endpoint read data" rights on the pipe prototype. Make a JWT for that role, and add that as a secret named "token" on the upstream system in the target instance. Then set the "USE_SECRET" environment variable in the script.
 
 Typically set up as a periodic job.
+
+Note that the script does not support conditional sources and transforms yet.
