@@ -25,8 +25,13 @@ def rewrite_pipe(p):
             "dataset": dataset_name,
         },
         "pump": {
-            "run_at_startup": True
-        }
+            "run_at_startup": True,
+        },
+        "metadata": {
+            "$replicate.py": {
+                "original": p,
+            }
+        },
     }
 
 
