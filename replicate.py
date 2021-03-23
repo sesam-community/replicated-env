@@ -7,6 +7,7 @@ TARGET_API = os.environ["TARGET_API"]
 TARGET_JWT = os.environ["TARGET_JWT"]
 
 SYSTEM_NAME = os.environ.get("SYSTEM_NAME", "upstream")
+USE_SECRET = os.environ.get("USE_SECRET", "") != ""
 
 
 def rewrite_pipe(p):
@@ -34,11 +35,10 @@ def should_replicate(c):
 
 def rewrite_config(c):
     c = [rewrite_pipe(p) if p.get("type") == 'pipe' and should_replicate(p) else p for p in c]
-    # TODO use secret for token
     c.append({
         "_id": SYSTEM_NAME,
         "authentication": "jwt",
-        "jwt_token": SOURCE_JWT,
+        "jwt_token": "$SECRET(token)" if USE_SECRET else SOURCE_JWT,
         "type": "system:url",
         "url_pattern": f'{SOURCE_API}/%s',
         "verify_ssl": True,
