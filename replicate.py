@@ -31,6 +31,7 @@ def has_external_transform(c):
     def is_external_transform(t):
         return t.get("type") in ["http", "rest"]
 
+    # TODO look at conditional transforms
     transforms = c.get("transform")
     if type(transforms) is list:
         for transform in transforms:
@@ -43,6 +44,7 @@ def has_external_transform(c):
 
 
 def should_replicate(c):
+    # TODO look at conditional sources
     external_source = c.get("source", {}).get("type") not in ["dataset", "merge", "union_datasets", "merge_datasets"]
     tagged = c.get("metadata", {}).get("$replicate", False)
     return external_source or has_external_transform(c) or tagged
@@ -62,7 +64,12 @@ def rewrite_config(c):
 
 
 if __name__ == '__main__':
+    # replicate (and rewrite) pipes and systems
     config = requests.get(f'{SOURCE_API}/config', headers={'Authorization': f'bearer {SOURCE_JWT}'}).json()
     config = rewrite_config(config)
     requests.put(f'{TARGET_API}/config?force=true', headers={'Authorization': f'bearer {TARGET_JWT}'}, json=config)\
+        .raise_for_status()
+    # replicate environment variables
+    env = requests.get(f'{SOURCE_API}/env', headers={'Authorization': f'bearer {SOURCE_JWT}'}).json()
+    requests.put(f'{TARGET_API}/env', headers={'Authorization': f'bearer {TARGET_JWT}'}, json=env) \
         .raise_for_status()

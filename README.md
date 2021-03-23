@@ -4,6 +4,6 @@ Script that rewrites the input pipes to replicate data from a source instance in
 
 Add a admin JWT to the source and target instance. Run script with the required environment variables listed in the beginning of the script.
 
-For improved security create a custom role in the source instance, give the role "Endpoint read data" rights on the pipe prototype. Make a JWT for that role, and add that as a secret named "token" on the upstream system in the target instance. Then set the "USE\_SECRET" environment variable in the script.
+For improved security create a custom role in the source instance, give the role "Endpoint read data" rights on the pipe prototype. Make a JWT for that role, and add that as a secret named "token" on the upstream system in the target instance. Then set the "USE_SECRET" environment variable in the script.
 
 Typically set up as a periodic job.
