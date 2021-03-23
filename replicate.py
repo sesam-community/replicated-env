@@ -47,7 +47,6 @@ def rewrite_config(c):
 
 
 if __name__ == '__main__':
-    f = open('Sesam Sesam Prod.json', 'r')
     config = requests.get(f'{SOURCE_API}/config', headers={'Authorization': f'bearer {SOURCE_JWT}'}).json()
     config = rewrite_config(config)
     requests.put(f'{TARGET_API}/config?force=true', headers={'Authorization': f'bearer {TARGET_JWT}'}, json=config)\
