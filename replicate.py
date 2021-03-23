@@ -24,6 +24,9 @@ def rewrite_pipe(p):
         "sink": {
             "dataset": dataset_name,
         },
+        "pump": {
+            "run_at_startup": True
+        }
     }
 
 
