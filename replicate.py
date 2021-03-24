@@ -76,8 +76,10 @@ def rewrite_config(c):
 
 if __name__ == '__main__':
     # replicate (and rewrite) pipes and systems
-    config = requests.get(f'{SOURCE_API}/config', headers={'Authorization': f'bearer {SOURCE_JWT}'}).json()
-    config = rewrite_config(config)
+    response = requests.get(f'{SOURCE_API}/config', headers={'Authorization': f'bearer {SOURCE_JWT}'})
+    response.raise_for_status()
+
+    config = rewrite_config(response.json())
     requests.put(f'{TARGET_API}/config?force=true', headers={'Authorization': f'bearer {TARGET_JWT}'}, json=config)\
         .raise_for_status()
     # replicate environment variables
