@@ -1,0 +1,85 @@
+[
+  {
+  "_id": "ingress-node-logs",
+  "type": "pipe",
+  "source": {
+    "type": "http_endpoint",
+    "do_float_as_decimal": false,
+    "do_float_as_int": false,
+    "enable_request_batching": true
+  },
+  "sink": {
+    "change_tracking": false
+  },
+  "transform": {
+    "type": "dtl",
+    "rules": {
+      "default": [
+        ["copy", "*"],
+        ["add", "_id", "_S.subscription_id"]
+      ]
+    }
+  },
+  "metadata": {
+    "$network": {
+      "public-access": true
+    },
+    "tags": "sesam-monitoring"
+  },
+  "add_namespaces": false,
+  "compaction": {
+    "compaction_interval": 300,
+    "keep_versions": 0,
+    "time_threshold_hours": 720
+  }
+},
+{
+  "_id": "node-logs",
+  "type": "pipe",
+  "source": {
+    "type": "dataset",
+    "dataset": "ingress-node-logs",
+    "include_previous_versions": true
+  },
+  "transform": {
+    "type": "dtl",
+    "rules": {
+      "default": [
+        ["copy", "*"],
+        ["add", "_id",
+          ["concat", "_S._id", "-", "_S.date"]
+        ]
+      ]
+    }
+  },
+  "add_namespaces": true,
+  "compaction": {
+    "compaction_interval": 300,
+    "keep_versions": 0,
+    "time_threshold_hours": 720
+  }
+},
+{
+  "_id": "smetrics-clean-trigger",
+  "type": "pipe",
+  "source": {
+    "type": "embedded",
+    "entities": [{
+      "_id": "foo",
+      "description": "this entity is just used to make a POST-request to 'https://sesam-smetrics-clean/clean'. The actual content of the entity is ignored."
+    }]
+  },
+  "sink": {
+    "type": "json",
+    "system": "smetrics-clean",
+    "url": "clean"
+  },
+  "pump": {
+    "schedule_interval": 3600,
+    "use_persistent_scheduling": true
+  },
+  "metadata": {
+    "tags": "sesam-monitoring"
+  }
+}
+]

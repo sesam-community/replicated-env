@@ -1,0 +1,106 @@
+[
+  {
+    "_id": "ingress-node-logs",
+    "metadata": {
+      "$replicate.py": {
+        "original": {
+          "_id": "ingress-node-logs",
+          "add_namespaces": false,
+          "compaction": {
+            "compaction_interval": 300,
+            "keep_versions": 0,
+            "time_threshold_hours": 720
+          },
+          "metadata": {
+            "$network": {
+              "public-access": true
+            },
+            "tags": "sesam-monitoring"
+          },
+          "sink": {
+            "change_tracking": false
+          },
+          "source": {
+            "do_float_as_decimal": false,
+            "do_float_as_int": false,
+            "enable_request_batching": true,
+            "type": "http_endpoint"
+          },
+          "transform": {
+            "rules": {
+              "default": [
+                [
+                  "copy",
+                  "*"
+                ],
+                [
+                  "add",
+                  "_id",
+                  "_S.subscription_id"
+                ]
+              ]
+            },
+            "type": "dtl"
+          },
+          "type": "pipe"
+        }
+      }
+    },
+    "pump": {
+      "run_at_startup": true
+    },
+    "sink": {
+      "dataset": "ingress-node-logs"
+    },
+    "source": {
+      "system": "upstream",
+      "type": "binary",
+      "url": "datasets/ingress-node-logs/entities"
+    },
+    "type": "pipe"
+  },
+  {
+    "_id": "node-logs",
+    "add_namespaces": true,
+    "compaction": {
+      "compaction_interval": 300,
+      "keep_versions": 0,
+      "time_threshold_hours": 720
+    },
+    "source": {
+      "dataset": "ingress-node-logs",
+      "include_previous_versions": true,
+      "type": "dataset"
+    },
+    "transform": {
+      "rules": {
+        "default": [
+          [
+            "copy",
+            "*"
+          ],
+          [
+            "add",
+            "_id",
+            [
+              "concat",
+              "_S._id",
+              "-",
+              "_S.date"
+            ]
+          ]
+        ]
+      },
+      "type": "dtl"
+    },
+    "type": "pipe"
+  },
+  {
+    "_id": "upstream",
+    "authentication": "jwt",
+    "jwt_token": "source_jwt",
+    "type": "system:url",
+    "url_pattern": "http://example.com/%s",
+    "verify_ssl": true
+  }
+]
