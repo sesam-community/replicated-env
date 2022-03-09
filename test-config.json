@@ -81,5 +81,44 @@
   "metadata": {
     "tags": "sesam-monitoring"
   }
-}
+},
+  {
+    "_id": "pipe-with-conditional-source-external",
+    "type": "pipe",
+    "source": {
+      "type": "conditional",
+      "alternatives": {
+        "prod": {
+          "type": "json",
+          "system": "arrow-billing",
+          "is_chronological": false,
+          "supports_since": true,
+          "url": "resources"
+        },
+        "test": {
+          "type": "embedded",
+          "entities": []
+        }
+      },
+      "condition": "$ENV(node-env)"
+    }
+  },
+  {
+    "_id": "pipe-with-conditional-source-internal",
+    "type": "pipe",
+    "source": {
+      "type": "conditional",
+      "alternatives": {
+        "prod": {
+          "type": "dataset",
+          "dataset": "foo"
+        },
+        "test": {
+          "type": "embedded",
+          "entities": []
+        }
+      },
+      "condition": "$ENV(node-env)"
+    }
+  }
 ]

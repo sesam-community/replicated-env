@@ -96,9 +96,67 @@
     "type": "pipe"
   },
   {
+    "_id": "pipe-with-conditional-source-external",
+    "type": "pipe",
+    "metadata": {
+      "$replicate.py": {
+        "original": {
+          "_id": "pipe-with-conditional-source-external",
+          "type": "pipe",
+          "source": {
+            "type": "conditional",
+            "alternatives": {
+              "prod": {
+                "type": "json",
+                "system": "arrow-billing",
+                "is_chronological": false,
+                "supports_since": true,
+                "url": "resources"
+              },
+              "test": {
+                "type": "embedded",
+                "entities": []
+              }
+            },
+            "condition": "$ENV(node-env)"
+          }
+        }
+      }
+    },
+    "source": {
+      "type": "binary",
+      "system": "upstream",
+      "url": "datasets/pipe-with-conditional-source-external/entities"
+    },
+    "sink": {
+      "dataset": "pipe-with-conditional-source-external"
+    },
+    "pump": {
+      "run_at_startup": true
+    }
+  },
+  {
+    "_id": "pipe-with-conditional-source-internal",
+    "type": "pipe",
+    "source": {
+      "type": "conditional",
+      "alternatives": {
+        "prod": {
+          "type": "dataset",
+          "dataset": "foo"
+        },
+        "test": {
+          "type": "embedded",
+          "entities": []
+        }
+      },
+      "condition": "$ENV(node-env)"
+    }
+  },
+  {
     "_id": "upstream",
     "authentication": "jwt",
-    "jwt_token": "source_jwt",
+    "jwt_token": "$SECRET(token)",
     "type": "system:url",
     "url_pattern": "http://example.com/%s",
     "verify_ssl": true
