@@ -8,4 +8,4 @@ For improved security create a custom role in the source instance, give the role
 
 Typically set up as a periodic job.
 
-Note that the script does not support transforms yet.
+Note that the script does not support conditional transforms yet.
